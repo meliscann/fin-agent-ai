@@ -1,0 +1,38 @@
+# ── Sırlar (asla commit etme) ─────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# ── Python (backend) ──────────────────────────────────
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.venv/
+*.egg-info/
+.policy_rate_last_check
+
+# ── Node / Next.js (frontend) ─────────────────────────
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# ── Notebook çıktıları (veri_analizi.ipynb tarafından üretilir, tekrar
+# çalıştırıldığında yeniden oluşur — asıl grafikler zaten .ipynb içinde
+# gömülü. Kök dizine sabitlendi (/) ki pusula-ai-backend/app/core/data/
+# gibi ALAKASIZ "data" adlı dizinlerle çakışmasın) ─────
+/outputs/
+/data/
+
+# ── Editör / OS ────────────────────────────────────────
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# ── Loglar ─────────────────────────────────────────────
+*.log
+npm-debug.log*
