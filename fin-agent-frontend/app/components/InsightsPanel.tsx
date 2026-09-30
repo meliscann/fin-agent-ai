@@ -291,7 +291,7 @@ export default function InsightsPanel() {
             <span className="ml-2 text-[#6b6b8a] font-normal text-sm">{analysisYearRange}</span>
           </h2>
           <p className="text-[10px] text-[#6b6b8a] mt-0.5">
-            Belirsizlik Ortamında Bireysel Yatırım Kararları · TCMB EVDS & Yahoo Finance
+            Yüksek Enflasyon Ortamında Portföy Analizi · TCMB EVDS & Yahoo Finance
           </p>
         </div>
         <span className="text-[10px] font-mono text-[#6b6b8a]">{ks.analysis_period}</span>
