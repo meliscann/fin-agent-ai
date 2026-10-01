@@ -146,6 +146,31 @@ Emin olmadığın şeylerde bunu belirt."""
 
 # ── Rapor Ajanı ───────────────────────────────────────────────────────────────
 
+_TURKISH_FONTS_REGISTERED = False
+
+
+def _register_turkish_fonts() -> None:
+    """DejaVu Sans'ı reportlab'e kaydeder.
+
+    reportlab'in yerleşik "Helvetica"sı WinAnsiEncoding kullanıyor ve
+    ı/ğ/ş/İ gibi Türkçe'ye özgü karakterleri içermiyor — PDF'te bunlar
+    kutucuk (▪) olarak basılıyordu. DejaVu Sans bu karakterleri kapsıyor;
+    dosyalar matplotlib'in paketinden alındı (bkz. app/assets/fonts/LICENSE_DEJAVU
+    — serbestçe gömülebilir/dağıtılabilir bir lisans).
+    """
+    global _TURKISH_FONTS_REGISTERED
+    if _TURKISH_FONTS_REGISTERED:
+        return
+    from pathlib import Path
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    fonts_dir = Path(__file__).resolve().parent.parent / "assets" / "fonts"
+    pdfmetrics.registerFont(TTFont("DejaVuSans", str(fonts_dir / "DejaVuSans.ttf")))
+    pdfmetrics.registerFont(TTFont("DejaVuSans-Bold", str(fonts_dir / "DejaVuSans-Bold.ttf")))
+    _TURKISH_FONTS_REGISTERED = True
+
+
 async def report_agent_run(message: str, context: dict | None = None) -> dict:
     """Portföy analizini PDF rapor olarak üretir (base64 kodlanmış döner)."""
     if not context or "portfolio" not in context:
@@ -159,6 +184,8 @@ async def report_agent_run(message: str, context: dict | None = None) -> dict:
     from reportlab.lib.units import cm
     from reportlab.pdfgen import canvas
     from app.core.analysis.monte_carlo import build_portfolio_metrics
+
+    _register_turkish_fonts()
 
     portfolio = context["portfolio"]
     inflation_rate = await _resolve_inflation_rate(context)
@@ -185,7 +212,7 @@ Türkçe, sade.""",
 
     def line(text: str, size: int = 11, dy: float = 0.7 * cm, bold: bool = False):
         nonlocal y
-        c.setFont("Helvetica-Bold" if bold else "Helvetica", size)
+        c.setFont("DejaVuSans-Bold" if bold else "DejaVuSans", size)
         c.drawString(2 * cm, y, text)
         y -= dy
 
@@ -194,25 +221,25 @@ Türkçe, sade.""",
         "tufe_bond": "TÜFE'ye Endeksli Tahvil", "deposit": "Mevduat",
     }
 
-    line("FinAgent - Portfoy Analiz Raporu", size=16, bold=True)
-    line(f"Olusturulma: {_dt.now().strftime('%d.%m.%Y %H:%M')}", size=9)
+    line("FinAgent — Portföy Analiz Raporu", size=16, bold=True)
+    line(f"Oluşturulma: {_dt.now().strftime('%d.%m.%Y %H:%M')}", size=9)
     y -= 0.3 * cm
-    line(f"Yatirim tutari: {portfolio.amount:,.0f} TL", bold=True)
-    line(f"Vade: {portfolio.horizon_years} yil")
+    line(f"Yatırım tutarı: {portfolio.amount:,.0f} TL", bold=True)
+    line(f"Vade: {portfolio.horizon_years} yıl")
     line(f"Risk profili: {portfolio.risk_profile}")
     y -= 0.3 * cm
-    line("Varlik Dagilimi:", bold=True)
+    line("Varlık Dağılımı:", bold=True)
     for k, v in portfolio.allocation.model_dump().items():
         line(f"  {labels.get(k, k)}: %{v:.0f}", size=10, dy=0.55 * cm)
     y -= 0.3 * cm
-    line("Sonuclar:", bold=True)
-    line(f"  Beklenen deger: {mc.expected:,.0f} TL", size=10, dy=0.55 * cm)
+    line("Sonuçlar:", bold=True)
+    line(f"  Beklenen değer: {mc.expected:,.0f} TL", size=10, dy=0.55 * cm)
     line(f"  Nominal getiri: %{nominal_ret:.1f}", size=10, dy=0.55 * cm)
     line(f"  Reel getiri: %{real_ret}", size=10, dy=0.55 * cm)
     line(f"  Enflasyon Koruma Skoru (IPS): {ips}/100", size=10, dy=0.55 * cm)
-    line(f"  Sharpe orani: {sharpe}", size=10, dy=0.55 * cm)
+    line(f"  Sharpe oranı: {sharpe}", size=10, dy=0.55 * cm)
     y -= 0.3 * cm
-    line("AI Degerlendirmesi:", bold=True)
+    line("AI Değerlendirmesi:", bold=True)
     for wrapped in textwrap.wrap(insight, width=95):
         line(wrapped, size=10, dy=0.5 * cm)
 
