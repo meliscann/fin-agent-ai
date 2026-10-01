@@ -139,7 +139,7 @@ Emin olmadığın şeylerde bunu belirt."""
 
     full_message = f"{message}{portfolio_info}{analysis_info}"
 
-    response = await llm.chat(full_message, system=system, temperature=0.5, max_tokens=800)
+    response = await llm.chat(full_message, system=system, temperature=0.5, max_tokens=1500)
 
     return {"response": response}
 
