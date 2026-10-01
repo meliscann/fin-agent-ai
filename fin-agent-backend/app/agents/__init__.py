@@ -222,7 +222,6 @@ Türkçe, sade.""",
     }
 
     line("FinAgent — Portföy Analiz Raporu", size=16, bold=True)
-    line(f"Oluşturulma: {_dt.now().strftime('%d.%m.%Y %H:%M')}", size=9)
     y -= 0.3 * cm
     line(f"Yatırım tutarı: {portfolio.amount:,.0f} TL", bold=True)
     line(f"Vade: {portfolio.horizon_years} yıl")
